@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pilih Jadwal Interview - PT Padepokan Tujuh Sembilan</title>
+
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Flatpickr (Kalender) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .flatpickr-calendar { border-radius: 1rem; border: 1px solid #e2e8f0; width: 100% !important; max-width: 320px; box-shadow: none; }
+    .flatpickr-day.selected { background: #0284c7 !important; border-color: #0284c7 !important; color: #ffffff !important; font-weight: bold; }
+    
+    .loader {
+      border: 2px solid #cbd5e1;
+      border-top: 2px solid #0284c7;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen py-10 px-4">
+
+  <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden">
+    
+    <div class="grid grid-cols-1 md:grid-cols-12">
+      
+      <!-- Kolom Kiri: Informasi Interview (Biru Profesional) -->
+      <div class="md:col-span-5 bg-slate-900 text-white p-8 flex flex-col justify-between relative overflow-hidden">
+        
+        <!-- Subtle Glow Effects -->
+        <div class="absolute -top-10 -left-10 w-36 h-36 bg-sky-500/20 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -right-10 w-36 h-36 bg-blue-600/20 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-6">
+            <!-- Badge Perusahaan -->
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 text-sky-400 text-xs font-semibold border border-slate-700 shadow-sm">
+              <i data-lucide="building-2" class="w-3.5 h-3.5 text-sky-400"></i> PT Padepokan Tujuh Sembilan
+            </div>
+            
+            <!-- Badge Portal Kandidat -->
+            <span class="px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300 text-[10px] font-bold tracking-wide uppercase border border-sky-500/30">
+              Kandidat
+            </span>
+          </div>
+
+          <h1 class="text-2xl font-bold mb-2 text-white">Jadwal Interview</h1>
+          <p class="text-slate-300 text-sm mb-6">Isi data diri dan pilih jadwal wawancara yang tersedia (Maksimal 5 Hari Kerja ke depan).</p>
+
+          <div class="space-y-4 text-sm text-slate-200 border-t border-slate-800 pt-6">
+            <div class="flex items-center gap-3">
+              <div class="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sky-400">
+                <i data-lucide="user" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="text-xs text-slate-400">Pewawancara</p>
+                <p class="font-bold text-white">Zalfa Nadhira (HR Team)</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sky-400">
+                <i data-lucide="video" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="text-xs text-slate-400">Metode</p>
+                <p class="font-bold text-white">Online Meeting (Link dikirim via WA)</p>
+              </div>
+            </div>
+
+            <!-- Ringkasan Pilihan -->
+            <div id="selectionSummary" class="hidden text-xs bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 shadow-sm space-y-1">
+              <p class="font-bold text-white flex items-center gap-1.5 mb-1">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Ringkasan Booking:
+              </p>
+              <p id="summaryName" class="text-slate-200 font-medium"></p>
+              <p id="summaryPosition" class="text-slate-300 text-[11px]"></p>
+              <p id="summaryDate" class="text-slate-300 font-medium pt-1 border-t border-slate-700/60"></p>
+              <p id="summaryTime" class="text-sky-400 font-bold"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-slate-800 text-xs text-slate-400 font-medium flex items-center gap-2 relative z-10">
+          <i data-lucide="shield-check" class="w-4 h-4 text-sky-400"></i>
+          Sistem Penjadwalan Realtime
+        </div>
+      </div>
+
+      <!-- Kolom Kanan: Form Data Diri, Pemilihan Tanggal & Slot Kandidat -->
+      <div class="md:col-span-7 p-6 sm:p-8 space-y-6">
+        
+        <!-- Form Data Diri Kandidat -->
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">1</span>
+            Data Diri Kandidat
+          </h2>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap *</label>
+              <input type="text" id="candidateName" placeholder="Contoh: Budi Santoso" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Posisi yang Dilamar *</label>
+                <input type="text" id="candidatePosition" placeholder="Contoh: Software Engineer" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">No. WhatsApp *</label>
+                <input type="tel" id="candidatePhone" placeholder="Contoh: 08123456789" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilih Tanggal & Jam -->
+        <div class="border-t border-slate-100 pt-5">
+          <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">2</span>
+            Pilih Tanggal & Waktu Interview
+          </h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
+            <!-- Kalender Flatpickr -->
+            <div>
+              <input type="text" id="calendarInline" class="hidden" />
+            </div>
+
+            <!-- Slot Waktu Tersedia -->
+            <div>
+              <p class="text-xs font-bold text-slate-600 mb-3" id="selectedDateText">Pilih tanggal di kalender</p>
+              <div id="timeSlotsContainer" class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                <p class="text-xs text-slate-400 italic">Silakan klik tanggal pada kalender terlebih dahulu.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tombol Konfirmasi WhatsApp -->
+        <div class="border-t border-slate-100 pt-4">
+          <button id="btnConfirmBooking" disabled class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+            <i data-lucide="message-square" class="w-4 h-4"></i> Konfirmasi Jadwal Interview
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Config Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmcCGGeSVRmD_feiT35aQOqYsfuunmuV8",
+      authDomain: "jadwal-hr-interview-zalf-44fd4.firebaseapp.com",
+      databaseURL: "https://jadwal-hr-interview-zalf-44fd4-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "jadwal-hr-interview-zalf-44fd4",
+      storageBucket: "jadwal-hr-interview-zalf-44fd4.firebasestorage.app",
+      messagingSenderId: "278003475071",
+      appId: "1:278003475071:web:b48ecfff15e953b996954a",
+      measurementId: "G-DEEVB9J1W2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.lucide) { lucide.createIcons(); }
+
+      let selectedDate = null;
+      let selectedSlot = null;
+      let formattedDayDateStr = "";
+      let disabledSlotsData = {};
+      let customAddedSlotsData = {};
+
+      const candidateNameInput = document.getElementById("candidateName");
+      const candidatePositionInput = document.getElementById("candidatePosition");
+      const candidatePhoneInput = document.getElementById("candidatePhone");
+
+      const defaultDaySlots = [
+        "09:00", "09:30", "10:00", "10:30",
+        "11:00", "11:30", "13:00", "13:30",
+        "14:00", "14:30", "15:00", "15:30"
+      ];
+
+      function formatDateStandard(d) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      // Helper Fungsi: Hitung tanggal H+5 khusus Hari Kerja (Senin-Jumat)
+      function getBusinessDaysAhead(startDate, daysToAdd) {
+        let current = new Date(startDate);
+        let added = 0;
+        while (added < daysToAdd) {
+          current.setDate(current.getDate() + 1);
+          const day = current.getDay();
+          // Skip Sabtu (6) dan Minggu (0)
+          if (day !== 0 && day !== 6) {
+            added++;
+          }
+        }
+        return current;
+      }
+
+      const today = new Date();
+      const maxBookingDate = getBusinessDaysAhead(today, 5); // 5 Hari Kerja ke depan
+
+      // Input Listener untuk validasi
+      [candidateNameInput, candidatePositionInput, candidatePhoneInput].forEach(input => {
+        input.addEventListener("input", updateSummary);
+      });
+
+      // Read Listener Firebase Realtime
+      onValue(ref(db, 'disabled_slots'), (snapshot) => {
+        disabledSlotsData = snapshot.val() || {};
+        if (selectedDate) renderTimeSlots(selectedDate);
+      });
+
+      onValue(ref(db, 'custom_added_slots'), (snapshot) => {
+        customAddedSlotsData = snapshot.val() || {};
+        if (selectedDate) renderTimeSlots(selectedDate);
+      });
+
+      // Flatpickr Kalender (Dikunci: Minimal hari ini, Maksimal H+5 Hari Kerja)
+      flatpickr("#calendarInline", {
+        inline: true,
+        locale: "id",
+        minDate: "today", // Tidak bisa pilih hari lalu
+        maxDate: maxBookingDate, // Batas maksimal 5 Hari Kerja ke depan
+        dateFormat: "Y-m-d",
+        disable: [
+          function(date) { return (date.getDay() === 0 || date.getDay() === 6); } // Kunci Sabtu & Minggu
+        ],
+        onChange: function(selectedDates) {
+          if (selectedDates.length > 0) {
+            selectedDate = formatDateStandard(selectedDates[0]);
+            selectedSlot = null;
+            updateSummary();
+            renderTimeSlots(selectedDate);
+          }
+        }
+      });
+
+      // Render Slot Waktu
+      function renderTimeSlots(dateStr) {
+        const container = document.getElementById("timeSlotsContainer");
+        const dateText = document.getElementById("selectedDateText");
+        
+        const dateParts = dateStr.split('-');
+        const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+        formattedDayDateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        dateText.innerText = formattedDayDateStr;
+
+        let allTimes = new Set([...defaultDaySlots]);
+
+        Object.keys(customAddedSlotsData).forEach(key => {
+          if (key.startsWith(dateStr)) {
+            allTimes.add(key.split('_')[1]);
+          }
+        });
+
+        const sortedTimes = Array.from(allTimes).sort();
+        const now = new Date();
+        const todayStr = formatDateStandard(now);
+
+        // Filter: Tampilkan slot yang belum di-disable HR & belum lewat jamnya jika pilih hari ini
+        const availableTimes = sortedTimes.filter(time => {
+          const slotKey = `${dateStr}_${time}`;
+          if (disabledSlotsData[slotKey]) return false;
+
+          if (dateStr === todayStr) {
+            const [h, m] = time.split(':').map(Number);
+            const slotDateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+            if (slotDateTime <= now) return false;
+          }
+
+          return true;
+        });
+
+        container.innerHTML = "";
+
+        if (availableTimes.length === 0) {
+          container.innerHTML = `<p class="text-xs text-rose-500 font-medium py-2">Tidak ada slot waktu tersedia pada tanggal ini.</p>`;
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        availableTimes.forEach(time => {
+          const [h, m] = time.split(':').map(Number);
+          let endH = h, endM = m + 30;
+          if (endM >= 60) { endH += 1; endM = 0; }
+          const timeRangeStr = `${time} - ${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')} WIB`;
+
+          const btn = document.createElement("button");
+          const isSelected = selectedSlot === time;
+
+          btn.className = `w-full p-2.5 border rounded-xl text-xs font-semibold flex justify-between items-center transition ${
+            isSelected 
+              ? 'bg-sky-600 text-white border-sky-600 shadow-sm' 
+              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+          }`;
+          
+          btn.innerHTML = `
+            <span>${timeRangeStr}</span>
+            <i data-lucide="${isSelected ? 'check-circle' : 'circle'}" class="w-4 h-4 ${isSelected ? 'text-white' : 'text-slate-300'}"></i>
+          `;
+
+          btn.addEventListener("click", () => {
+            selectedSlot = time;
+            renderTimeSlots(dateStr);
+            updateSummary();
+          });
+
+          fragment.appendChild(btn);
+        });
+
+        container.appendChild(fragment);
+        if (window.lucide) { lucide.createIcons(); }
+      }
+
+      function updateSummary() {
+        const summaryBox = document.getElementById("selectionSummary");
+        const summaryName = document.getElementById("summaryName");
+        const summaryPosition = document.getElementById("summaryPosition");
+        const summaryDate = document.getElementById("summaryDate");
+        const summaryTime = document.getElementById("summaryTime");
+        const btnConfirm = document.getElementById("btnConfirmBooking");
+
+        const nameVal = candidateNameInput.value.trim();
+        const posVal = candidatePositionInput.value.trim();
+        const phoneVal = candidatePhoneInput.value.trim();
+
+        const isFormValid = nameVal && posVal && phoneVal && selectedDate && selectedSlot;
+
+        if (selectedDate && selectedSlot) {
+          summaryName.innerText = nameVal ? nameVal : "Nama belum diisi";
+          summaryPosition.innerText = posVal ? `Posisi: ${posVal}` : "Posisi belum diisi";
+          summaryDate.innerText = formattedDayDateStr;
+          summaryTime.innerText = `Pukul ${selectedSlot} WIB`;
+          
+          summaryBox.classList.remove("hidden");
+        } else {
+          summaryBox.classList.add("hidden");
+        }
+
+        btnConfirm.disabled = !isFormValid;
+      }
+
+      // Redirect ke WhatsApp Zalfa
+      document.getElementById("btnConfirmBooking").addEventListener("click", () => {
+        const nameVal = candidateNameInput.value.trim();
+        const posVal = candidatePositionInput.value.trim();
+        const phoneVal = candidatePhoneInput.value.trim();
+
+        if (!nameVal || !posVal || !phoneVal || !selectedDate || !selectedSlot) {
+          alert("Harap lengkapi semua data diri dan pilih jadwal terlebih dahulu!");
+          return;
+        }
+
+        const [h, m] = selectedSlot.split(':').map(Number);
+        let endH = h, endM = m + 30;
+        if (endM >= 60) { endH += 1; endM = 0; }
+        const timeRangeText = `${selectedSlot} - ${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')} WIB`;
+
+        const waText = `Hallo Zalfa!\n\nSaya *${nameVal}*, telah melakukan booking jadwal interview untuk posisi *${posVal}* pada:\n\n- Hari/Tanggal: ${formattedDayDateStr}\n- Waktu: ${timeRangeText}\n- No. WhatsApp: ${phoneVal}\n\nMohon konfirmasinya dan informasi tautan meeting untuk sesi tersebut.\n\nTerima kasih.`;
+
+        const waNumber = "6281220289311";
+        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`;
+
+        window.open(waUrl, '_blank');
+      });
+
+    });
+  </script>
+</body>
+</html>
