@@ -574,7 +574,7 @@
           const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
           const waText = `Halo Zalfa!\n\nSaya *${activeRescheduleData.bookedBy}* (Posisi: *${activeRescheduleData.position}*), mau menginformasikan bahwa saya MEMBATALKAN jadwal interview saya pada:\n- Hari/Tanggal: ${formattedDate}\n- Jam: ${timeTimeText(timePart)}\n\nTerima kasih atas kepahamannya.`;
-          const waUrl = `https://wa.me/6281220289311?text=${encodeURIComponent(waText)}`;
+          const waUrl = `https://wa.me/6281933328604?text=${encodeURIComponent(waText)}`;
           window.open(waUrl, '_blank');
 
         } catch (err) {
@@ -669,7 +669,7 @@
             waText = `Halo Zalfa!\n\nSaya *${nameVal}*, telah melakukan booking jadwal interview untuk posisi *${posVal}* pada:\n\n- Hari/Tanggal: ${formattedDayDateStr}\n- Waktu: ${timeRangeText}\n- No. WhatsApp: ${phoneVal}\n\nMohon konfirmasinya dan informasi tautan meeting untuk sesi tersebut.\n\nTerima kasih.`;
           }
 
-          const waNumber = "6281220289311";
+          const waNumber = "6281933328604";
           const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`;
 
           if (isRescheduleMode) exitRescheduleMode();
